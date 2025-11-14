@@ -1,4 +1,4 @@
-import { Alert, View, Text, ActivityIndicator } from 'react-native';
+import { Alert, View, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
@@ -18,9 +18,11 @@ export default function MarkerInformation() {
 
     const marker = useMarkerById(id);
 
+    const isLoading = !success || !marker;
+
     useEffect(() => {
         (async () => {
-            if (!status || status.status !== 'granted') {
+            if (!status?.granted) {
                 const permission = await requestPermission();
                 if (permission.status !== 'granted') {
                     Alert.alert(
@@ -30,31 +32,29 @@ export default function MarkerInformation() {
                 }
             }
         })()
-    }, [status, requestPermission]);
+    }, [requestPermission, status?.granted]);
 
     useEffect(() => {
-        if (!marker) return;
+        if (isLoading || status?.status !== 'granted') {
+            setAddress('Не удалось получить адрес :(');
+            return;
+        }
 
         (async () => {
             try {
-                if (status?.status === "granted") {
-                    setAddress("Загрузка...")
-                    const { latitude, longitude } = JSON.parse(marker.coordinate);
+                setAddress("Загрузка...")
+                const { latitude, longitude } = JSON.parse(marker.coordinate);
 
-                    const [result] = await Location.reverseGeocodeAsync({ latitude, longitude, });
-                    if (result) {
-                        setAddress(`${result.formattedAddress}`);
-                    }
-                }
+                const [result] = await Location.reverseGeocodeAsync({ latitude, longitude, });
+                setAddress(`${result?.formattedAddress || "Не удалось получить адрес :("}`);
             } catch (e) {
                 console.log('Ошибка при геокодировании:', e);
+                setAddress('Не удалось получить адрес');
             }
         })();
-    }, [marker, status]);
+    }, [marker, status, isLoading]);
 
     const onSaveModal = async (title: string | null, description: string | null) => {
-        if (!marker) return;
-
         try {
             await updateMarker(id, title, description);
         } catch (e) {
@@ -65,18 +65,10 @@ export default function MarkerInformation() {
         }
     }
 
-    if (!success) {
+    if (isLoading) {
         return (
             <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size="large" />
-            </View>
-        )
-    }
-
-    if (!marker) {
-        return (
-            <View className="flex-1 justify-center items-center">
-                <Text className='text-lg'>Не удалось получить информацию по маркеру</Text>
             </View>
         )
     }

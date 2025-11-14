@@ -5,7 +5,7 @@ import DeleteMarkerButton from '@/components/buttons/DeleteMarkerButton';
 import { NavigationParams } from '@/types';
 
 export default function MarkerTabsLayout() {
-    const { id } = useLocalSearchParams<NavigationParams["MatkerId"]>();
+    const { id } = useLocalSearchParams<NavigationParams["MarkerId"]>();
 
     return (
         <Tabs

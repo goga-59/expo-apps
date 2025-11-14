@@ -1,22 +1,27 @@
 import Map from '@/components/Map';
-import { ActivityIndicator, View, Text, Alert } from "react-native";
+import { ActivityIndicator, View, Alert } from "react-native";
 import { LongPressEvent } from "react-native-maps";
-import { randomUUID } from "expo-crypto";
 import { useDatabase, useMarkers } from "@/context/DatabaseContext";
 import { NewMarker } from "@/database/schema";
+import { useEffect } from 'react';
+import { randomUUID } from 'expo-crypto';
 
 export default function Index() {
 
     const { success, addMarker } = useDatabase();
     const markers = useMarkers();
 
-    const onLongPress = async (e: LongPressEvent) => {
-        if (!success || !markers) return;
+    const isLoading = !success || !markers;
 
+    useEffect(() => {
+        console.log(markers)
+    })
+
+    const onLongPress = async (e: LongPressEvent) => {
         try {
             const newMarker: NewMarker = {
-                coordinate: JSON.stringify(e.nativeEvent.coordinate),
                 id: randomUUID(),
+                coordinate: JSON.stringify(e.nativeEvent.coordinate)
             }
             await addMarker(newMarker);
         } catch (e) {
@@ -25,18 +30,10 @@ export default function Index() {
         }
     }
 
-    if (!success) {
+    if (isLoading) {
         return (
             <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size="large" />
-            </View>
-        )
-    }
-
-    if (!markers) {
-        return (
-            <View className="flex-1 justify-center items-center">
-                <Text className='text-lg'>Не удалось получить маркеры</Text>
             </View>
         )
     }

@@ -7,7 +7,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ActionButton from "@/components/buttons/ActionButton";
 import Title from "@/components/Title";
 import { randomUUID } from "expo-crypto";
-import { useDatabase, usePhotos } from "@/context/DatabaseContext";
+import { useDatabase, usePhoto } from "@/context/DatabaseContext";
 import { NewPhoto, PhotoData } from "@/database/schema";
 import { NavigationParams } from "@/types";
 import PhotoModal from "@/components/modals/PhotoModal";
@@ -19,11 +19,11 @@ export default function MarkerPhotos() {
     const [selectedPhoto, setSelectedPhoto] = useState<PhotoData | null>(null);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
-    const photos = usePhotos(id);
+    const photos = usePhoto(id);
+
+    const isLoading = !success || !photos;
 
     const pickImageAsync = async () => {
-        if (!photos) return;
-
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
             allowsEditing: false,
@@ -67,18 +67,10 @@ export default function MarkerPhotos() {
         </View>
     )
 
-    if (!success) {
+    if (isLoading) {
         return (
             <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size="large" />
-            </View>
-        )
-    }
-
-    if (!photos) {
-        return (
-            <View className="flex-1 justify-center items-center">
-                <Text className='text-lg'>Не удалось получить информацию по маркеру</Text>
             </View>
         )
     }

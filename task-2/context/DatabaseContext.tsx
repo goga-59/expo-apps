@@ -15,7 +15,6 @@ interface DatabaseContext {
     addPhoto: (photo: NewPhoto) => Promise<void>;
     removePhoto: (photoId: string) => Promise<void>;
     success: boolean,
-    error: Error | undefined,
 }
 
 const Context = createContext<DatabaseContext | null>(null);
@@ -60,44 +59,33 @@ function DatabaseCoreProvider({ db, children }: { db: DB; children: React.ReactN
     const { success, error } = useMigrations(db, migrations);
 
     const addMarker = useCallback(async (marker: NewMarker) => {
-        try {
-            await db.insert(markers).values(marker);
-        } catch (e) { throw e; }
+        await db.insert(markers).values(marker);
     }, [db]);
 
     const removeMarker = useCallback(async (markerId: string) => {
-        try {
-            await db.delete(markers).where(eq(markers.id, markerId));
-        } catch (e) { throw e; }
+        await db.delete(markers).where(eq(markers.id, markerId));
     }, [db]);
 
     const updateMarker = useCallback(async (markerId: string, title: string | null, description: string | null) => {
-        try {
-            const patch: Record<string, string> = {};
-            if (title !== null) patch.title = title;
-            if (description !== null) patch.description = description;
-            if (Object.keys(patch).length === 0) return;
+        const patch: Partial<MarkerData> = {};
+        if (title !== null) patch.title = title;
+        if (description !== null) patch.description = description;
+        if (Object.keys(patch).length === 0) return;
 
-            await db.update(markers).set(patch).where(eq(markers.id, markerId));
-        } catch (e) { throw e; }
+        await db.update(markers).set(patch).where(eq(markers.id, markerId));
     }, [db]);
 
     const addPhoto = useCallback(async (photo: NewPhoto) => {
-        try {
-            await db.insert(photos).values(photo);
-        } catch (e) { throw (e); }
+        await db.insert(photos).values(photo);
     }, [db]);
 
     const removePhoto = useCallback(async (photoId: string) => {
-        try {
-            await db.delete(photos).where(eq(photos.id, photoId));
-        } catch (e) { throw e; }
+        await db.delete(photos).where(eq(photos.id, photoId));
     }, [db]);
 
-    const value = useMemo(() => ({ db, addMarker, removeMarker, updateMarker, addPhoto, removePhoto, success, error }), [
+    const value = useMemo(() => ({ db, addMarker, removeMarker, updateMarker, addPhoto, removePhoto, success}), [
         db,
         success,
-        error,
         addMarker,
         removeMarker,
         updateMarker,
@@ -126,24 +114,18 @@ export function useDatabase() {
 
 export function useMarkers() {
     const { db } = useDatabase();
-    const query = useMemo(
-        () => db.select().from(markers), [db]
-    );
 
-    const { data, error } = useLiveQuery(query)
+    const { data, error } = useLiveQuery(db.select().from(markers))
     if (error)
         return null;
 
     return data as MarkerData[];
 }
 
-export function usePhotos(markerId: string) {
+export function usePhoto(markerId: string) {
     const { db } = useDatabase();
-    const query = useMemo(
-        () => db.select().from(photos).where(eq(photos.markerId, markerId)).orderBy(asc(photos.addedAt)), [db, markerId]
-    );
 
-    const { data, error } = useLiveQuery(query)
+    const { data, error } = useLiveQuery(db.select().from(photos).where(eq(photos.markerId, markerId)).orderBy(asc(photos.addedAt)))
     if (error)
         return null
 
@@ -152,11 +134,8 @@ export function usePhotos(markerId: string) {
 
 export function useMarkerById(markerId: string) {
     const { db } = useDatabase();
-    const query = useMemo(
-        () => db.select().from(markers).where(eq(markers.id, markerId)).limit(1), [db, markerId]
-    );
 
-    const { data, error } = useLiveQuery(query)
+    const { data, error } = useLiveQuery(db.select().from(markers).where(eq(markers.id, markerId)).limit(1))
     if (error)
         return null;
 
