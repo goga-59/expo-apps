@@ -1,10 +1,11 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
+import { LatLng } from "react-native-maps";
 
 export const markers = sqliteTable("markers", {
     id: text("id").primaryKey(),
     title: text("title"),
     description: text("description"),
-    coordinate: text("coordinate").notNull(),
+    coordinate: text("coordinate", { mode: 'json' }).notNull().$type<LatLng>(),
     createdAt: integer("created_at").notNull().$defaultFn(() => Date.now())
 });
 
@@ -15,8 +16,7 @@ export const photos = sqliteTable("photos", {
     addedAt: integer("added_at").notNull().$defaultFn(() => Date.now())
 });
 
-export type MarkerData = typeof markers.$inferSelect;
-export type NewMarker = typeof markers.$inferInsert;
-
-export type PhotoData = typeof photos.$inferSelect;
-export type NewPhoto = typeof photos.$inferInsert;
+export type MarkerSelect = typeof markers.$inferSelect;
+export type MarkerInsert = typeof markers.$inferInsert;
+export type PhotoSelect = typeof photos.$inferSelect;
+export type PhotoInsert = typeof photos.$inferInsert;
