@@ -1,9 +1,9 @@
 import MapView, { LongPressEvent, Region } from "react-native-maps";
 import MarkerList from "./lists/MarkerList";
-import { MarkerData } from "@/database/schema";
+import { MarkerSelect } from "@/database/schema";
 
 type MapProps = {
-    markers: MarkerData[];
+    markers: MarkerSelect[] | null;
     onLongPress: (e: LongPressEvent) => void;
 }
 
@@ -20,8 +20,8 @@ export default function Map({ markers, onLongPress }: MapProps) {
             style={{ flex: 1 }}
             initialRegion={region}
             onLongPress={onLongPress}
-            loadingEnabled
             toolbarEnabled={false}
+            moveOnMarkerPress={false}
         >
             <MarkerList markers={markers} />
         </MapView>

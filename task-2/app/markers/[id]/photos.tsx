@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { View, Text, ActivityIndicator, Alert } from "react-native";
+import { View, Text, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import ImageList from "@/components/lists/ImageList";
@@ -7,21 +7,20 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ActionButton from "@/components/buttons/ActionButton";
 import Title from "@/components/Title";
 import { randomUUID } from "expo-crypto";
-import { useDatabase, usePhoto } from "@/context/DatabaseContext";
-import { NewPhoto, PhotoData } from "@/database/schema";
+import { useDatabase } from "@/context/DatabaseContext";
+import { PhotoInsert, PhotoSelect } from "@/database/schema";
 import { NavigationParams } from "@/types";
 import PhotoModal from "@/components/modals/PhotoModal";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 export default function MarkerPhotos() {
     const { id } = useLocalSearchParams<NavigationParams["Photo"]>();
 
-    const { success, addPhoto, removePhoto } = useDatabase();
-    const [selectedPhoto, setSelectedPhoto] = useState<PhotoData | null>(null);
+    const { getPhotosByMarkerId, addPhoto, removePhoto } = useDatabase();
+    const [selectedPhoto, setSelectedPhoto] = useState<PhotoSelect | null>(null);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
-    const photos = usePhoto(id);
-
-    const isLoading = !success || !photos;
+    const { data: photos } = useLiveQuery(getPhotosByMarkerId(id));
 
     const pickImageAsync = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -34,7 +33,7 @@ export default function MarkerPhotos() {
 
         try {
             const photoData = result.assets[0];
-            const newPhoto: NewPhoto = {
+            const newPhoto: PhotoInsert = {
                 id: randomUUID(),
                 uri: photoData.uri,
                 markerId: id,
@@ -55,7 +54,7 @@ export default function MarkerPhotos() {
         }
     };
 
-    const openPhoto = (photo: PhotoData) => {
+    const openPhoto = (photo: PhotoSelect) => {
         setSelectedPhoto(photo);
         setIsModalVisible(true);
     }
@@ -67,21 +66,13 @@ export default function MarkerPhotos() {
         </View>
     )
 
-    if (isLoading) {
-        return (
-            <View className="flex-1 justify-center items-center">
-                <ActivityIndicator size="large" />
-            </View>
-        )
-    }
-
     return (
         <View className="flex-1 bg-white items-center">
             <View className="flex-[0.86] rounded-2xl bg-gray-100 shadow-lg w-[95%] mt-4 border border-gray-200">
                 <Title text="Галерея" />
 
                 <View className="flex-1">
-                    {photos.length === 0 ? (
+                    {!photos || photos.length === 0 ? (
                         <EmptyGallery />
                     ) : (
                         <ImageList photos={photos} onRemovePhoto={onRemovePhoto} onOpenPhoto={openPhoto} />

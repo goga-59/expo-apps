@@ -1,11 +1,11 @@
-import { PhotoData } from "@/database/schema";
+import { PhotoSelect } from "@/database/schema";
 import { FlatList, Image, Dimensions, View, Alert, Pressable } from "react-native";
 
 type ImageListProps = {
-    photos: PhotoData[];
+    photos: PhotoSelect[];
     numColumns?: number;
     onRemovePhoto: (id: string) => void;
-    onOpenPhoto: (photo: PhotoData) => void;
+    onOpenPhoto: (photo: PhotoSelect) => void;
 }
 
 export default function ImageList({ photos, numColumns = 3, onRemovePhoto, onOpenPhoto }: ImageListProps) {

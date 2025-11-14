@@ -1,10 +1,10 @@
 import React from "react";
 import { Marker } from "react-native-maps";
 import { useRouter } from "expo-router";
-import { MarkerData } from "@/database/schema";
+import { MarkerSelect } from "@/database/schema";
 
 type MarkerListProps = {
-    markers: MarkerData[];
+    markers: MarkerSelect[] | null;
 }
 
 export default function MarkerList({ markers }: MarkerListProps) {
@@ -12,10 +12,10 @@ export default function MarkerList({ markers }: MarkerListProps) {
 
     return (
         <>
-            {markers.map((marker) => (
+            {markers && markers.map((marker) => (
                 <Marker
                     key={marker.id}
-                    coordinate={JSON.parse(marker.coordinate)}
+                    coordinate={marker.coordinate}
                     onPress={() => router.push({
                         pathname: `/markers/[id]/information`,
                         params: { id: marker.id }
