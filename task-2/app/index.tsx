@@ -3,7 +3,6 @@ import { ActivityIndicator, View, Alert } from "react-native";
 import { LongPressEvent } from "react-native-maps";
 import { useDatabase, useMarkers } from "@/context/DatabaseContext";
 import { NewMarker } from "@/database/schema";
-import { useEffect } from 'react';
 import { randomUUID } from 'expo-crypto';
 
 export default function Index() {
@@ -12,10 +11,6 @@ export default function Index() {
     const markers = useMarkers();
 
     const isLoading = !success || !markers;
-
-    useEffect(() => {
-        console.log(markers)
-    })
 
     const onLongPress = async (e: LongPressEvent) => {
         try {
