@@ -1,5 +1,5 @@
-import React from "react";
-import { Marker } from "react-native-maps";
+import React, { Fragment } from "react";
+import { Circle, Marker } from "react-native-maps";
 import { useRouter } from "expo-router";
 import { MarkerSelect } from "@/database/schema";
 
@@ -13,15 +13,23 @@ export default function MarkerList({ markers }: MarkerListProps) {
     return (
         <>
             {markers && markers.map((marker) => (
-                <Marker
-                    key={marker.id}
-                    coordinate={marker.coordinate}
-                    onPress={() => router.push({
-                        pathname: `/markers/[id]/information`,
-                        params: { id: marker.id }
-                    })}
-                >
-                </Marker>
+                <Fragment key={marker.id}>
+                    <Marker
+                        image={require('@/assets/images/marker.png')}
+                        coordinate={marker.coordinate}
+                        onPress={() => router.push({
+                            pathname: `/markers/[id]/information`,
+                            params: { id: marker.id }
+                        })}
+                    />
+                    <Circle
+                        center={marker.coordinate}
+                        radius={200}
+                        strokeWidth={2}
+                        strokeColor="#2E66E7"
+                        fillColor="rgba(46, 102, 231, 0.15)"
+                    />
+                </Fragment>
             ))}
         </>
     )

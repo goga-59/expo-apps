@@ -1,4 +1,5 @@
 import { useDatabase } from "@/context/DatabaseContext";
+import { notificationManager } from "@/services/notification";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Alert, Pressable } from "react-native";
@@ -23,7 +24,8 @@ export default function DeleteMarkerButton({ markerId }: DeleteMarkerButtonProps
                     onPress: async () => {
                         try {
                             await removeMarker(markerId);
-                            router.dismissAll();
+                            await notificationManager.removeNotification(markerId);
+                            router.dismissTo("/");
                         } catch (e) {
                             console.error("Failed to remove marker: ", e);
                             Alert.alert("Ошибка", "Не удалось удалить маркер");
