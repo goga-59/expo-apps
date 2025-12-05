@@ -1,0 +1,1 @@
+ALTER TABLE `photos` ADD `marker_id` text NOT NULL REFERENCES markers(id);
