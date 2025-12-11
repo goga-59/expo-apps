@@ -65,15 +65,17 @@ class NotificationManager {
         const notification = this.activeNotifications.get(markerId);
         if (!notification) return;
 
-        const id = notification.notificationId;
+        try {
+            await Notifications.dismissNotificationAsync(notification.notificationId);
+        } catch(e) { 
+            console.log(e);
+        }
 
         try {
-            await Notifications.dismissNotificationAsync(id);
-        } catch { }
-
-        try {
-            await Notifications.cancelScheduledNotificationAsync(id);
-        } catch { }
+            await Notifications.cancelScheduledNotificationAsync(notification.notificationId);
+        } catch(e) { 
+            console.log(e);
+        }
 
         this.activeNotifications.delete(markerId);
     }
