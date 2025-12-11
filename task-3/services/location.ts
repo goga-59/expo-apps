@@ -47,9 +47,6 @@ class LocationManager {
     }
 
     public async getCurrentLocation(): Promise<LatLng | null> {
-        if (this.location)
-            return this.location;
-
         try {
             const loc = await Location.getCurrentPositionAsync({
                 accuracy: this.config.accuracy,
