@@ -6,6 +6,7 @@ import m0001 from './0001_colossal_lockheed.sql';
 import m0002 from './0002_tiny_zaladane.sql';
 import m0003 from './0003_narrow_sasquatch.sql';
 import m0004 from './0004_massive_smiling_tiger.sql';
+import m0005 from './0005_fine_jubilee.sql';
 
   export default {
     journal,
@@ -14,7 +15,8 @@ import m0004 from './0004_massive_smiling_tiger.sql';
 m0001,
 m0002,
 m0003,
-m0004
+m0004,
+m0005
     }
   }
   

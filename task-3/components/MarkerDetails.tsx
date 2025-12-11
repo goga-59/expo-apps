@@ -5,10 +5,9 @@ import { MarkerSelect } from "@/database/schema";
 
 interface MarkerDetailsProps {
     marker: MarkerSelect;
-    address: string;
 }
 
-export default function MarkerDetails({ marker, address }: MarkerDetailsProps) {
+export default function MarkerDetails({ marker }: MarkerDetailsProps) {
     return (
         <View className="flex-[0.86] px-4 rounded-2xl bg-gray-100 shadow-lg w-[95%] mt-4 border border-gray-200">
             <Title text={marker?.title || "Ваш новый маркер!"} />
@@ -26,9 +25,9 @@ export default function MarkerDetails({ marker, address }: MarkerDetailsProps) {
                 <Text className='text-2xl font-semibold ml-5 mt-4 border-b pb-3 w-[90%]'>Местоположение</Text>
                 <ScrollView>
                     <Text className="text-lg text-gray-700 mt-2 ml-5">
-                        {address || "Не удалось получить адрес :("}
-                        {"\n"}Широта: {marker?.coordinate.latitude.toFixed(3)}
-                        {"\n"}Долгота: {marker?.coordinate.longitude.toFixed(3)}
+                        {marker?.formattedAddress && <Text>{marker.formattedAddress + '\n'}</Text>}
+                        <Text>Широта: {marker?.coordinate.latitude.toFixed(3) + '\n'}</Text>
+                        <Text>Долгота: {marker?.coordinate.longitude.toFixed(3)}</Text>
                     </Text>
                 </ScrollView>
             </View>

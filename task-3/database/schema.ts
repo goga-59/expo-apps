@@ -6,6 +6,7 @@ export const markers = sqliteTable("markers", {
     title: text("title"),
     description: text("description"),
     coordinate: text("coordinate", { mode: 'json' }).notNull().$type<LatLng>(),
+    formattedAddress: text("formatted_address"),
     createdAt: integer("created_at").notNull().$defaultFn(() => Date.now())
 });
 

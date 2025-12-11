@@ -1,0 +1,1 @@
+ALTER TABLE `markers` ADD `formatted_address` text;
